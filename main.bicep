@@ -9,9 +9,6 @@ param appServiceName string = 'toylaunch${uniqueString(resourceGroup().id)}x'
 param environmentType string
 
 var storageAccountSkuName = (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
-var appServicePlanSkuName = (environmentType == 'prod') ? 'P2v3' : 'F1'
-var appServicePlanName = 'toy-product-launch-planx'
-
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: 'toylaunchstorage01x'
@@ -25,19 +22,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: appServicePlanName
-  location: location
-  sku: {
-    name: appServicePlanSkuName
+module appService './modules/appService.bicep' = {
+  name: 'appService'
+  params: {
+    location: location
+    appServiceName: appServiceName
+    environmentType: environmentType
   }
 }
 
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'toy-product-launch-1x'
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-  }
-}
+output appServiceAppHostName string = appService.outputs.appServiceAppHostName
