@@ -63,7 +63,7 @@ resource cosmosDBAccountDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-
     workspaceId: logAnalyticsWorkspace.id
     logs: [
       {
-        category: 'DataPlanRequests'
+        category: 'DataPlaneRequests'
         enabled: true
       }
     ]
